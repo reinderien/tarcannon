@@ -55,11 +55,6 @@ def load_auth(
     return header.__eq__
 
 
-def mangle_disposition(path: str) -> str:
-    slug = path.strip('/').replace('/', '_').replace('\\', '_')
-    return slug + '.tar'
-
-
 def stream(path: pathlib.Path, wfile: typing.BinaryIO) -> None:
     tar_log = max(0, min(3, int(4.5 - 0.1*logger.root.level)))
 
@@ -110,7 +105,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not path.is_dir():
             self.send_error(http.HTTPStatus.NOT_FOUND)
             return
-        mangled = mangle_disposition(str(path))
+        mangled = path.name + '.tar'
         logger.info('Streaming %s to %s', path, mangled)
 
         self.send_response(http.HTTPStatus.OK)
